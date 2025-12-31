@@ -1,0 +1,69 @@
+# # Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# # Environment variables
+.env
+.env.local
+.env.production
+
+# # Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# # Uploads
+uploads/
+
+# # Test coverage
+coverage/
+.nyc_output/
+
+# # IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# # OS
+.DS_Store
+Thumbs.db
+
+# # Build
+dist/
+build/
+
+# # Temporary files
+tmp/
+temp/
+
+# # Database
+*.sqlite
+*.sqlite3
+
+# # PM2
+.pm2/
+ecosystem.config.js
+
+# # Redis dump
+dump.rdb
+
+
+
+# --------------------
+# Ignore specific folders completely
+# --------------------
+onk/
+logs/
+doc/
+BACKUPS/
+tests/
+
+
+
+# AND keep only first-level folders inside uploads
+!uploads/*/

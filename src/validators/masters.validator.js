@@ -86,6 +86,14 @@ const manufacturerValidation = {
       .trim()
       .notEmpty().withMessage('Manufacturer name is required')
       .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('brand_name')
+      .optional()
+      .trim()
+      .isLength({ min: 2, max: 255 }).withMessage('Brand name must be between 2 and 255 characters'),
+    body('brand_logo_url')
+      .optional()
+      .trim()
+      .isURL().withMessage('Brand logo URL must be a valid URL'),
     body('description')
       .optional()
       .trim()
@@ -122,6 +130,14 @@ const manufacturerValidation = {
       .trim()
       .notEmpty().withMessage('Manufacturer name cannot be empty')
       .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('brand_name')
+      .optional()
+      .trim()
+      .isLength({ min: 2, max: 255 }).withMessage('Brand name must be between 2 and 255 characters'),
+    body('brand_logo_url')
+      .optional()
+      .trim()
+      .isURL().withMessage('Brand logo URL must be a valid URL'),
     body('description')
       .optional()
       .trim()

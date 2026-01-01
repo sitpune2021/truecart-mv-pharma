@@ -103,7 +103,19 @@ class ProductController extends BaseController {
    * Get all products
    */
   getAllProducts = this.asyncHandler(async (req, res) => {
-    const { page, limit, search, category, brand, isActive, isFeatured, sortBy, sortOrder } = req.query;
+    const {
+      page,
+      limit,
+      search,
+      category,
+      brand,
+      isActive,
+      isFeatured,
+      isBestSeller,
+      isOffer,
+      sortBy,
+      sortOrder
+    } = req.query;
 
     const result = await ProductService.getAllProducts({
       page: parseInt(page) || 1,
@@ -113,6 +125,8 @@ class ProductController extends BaseController {
       brand,
       isActive: isActive !== undefined ? isActive === 'true' : null,
       isFeatured: isFeatured !== undefined ? isFeatured === 'true' : null,
+      isBestSeller: isBestSeller !== undefined ? isBestSeller === 'true' : null,
+      isOffer: isOffer !== undefined ? isOffer === 'true' : null,
       sortBy,
       sortOrder
     });

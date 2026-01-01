@@ -8,10 +8,11 @@ const TEMP_DIR = path.join(UPLOAD_ROOT, 'temp');
 const USER_DIR = path.join(UPLOAD_ROOT, 'users');
 const PRODUCT_DIR = path.join(UPLOAD_ROOT, 'products');
 const BRAND_DIR = path.join(UPLOAD_ROOT, 'brands');
+const MANUFACTURER_DIR = path.join(UPLOAD_ROOT, 'manufacturers');
 const CATEGORY_DIR = path.join(UPLOAD_ROOT, 'categories');
 
 const ensureDirectories = () => {
-  [UPLOAD_ROOT, TEMP_DIR, USER_DIR, PRODUCT_DIR, BRAND_DIR, CATEGORY_DIR].forEach((dir) => {
+  [UPLOAD_ROOT, TEMP_DIR, USER_DIR, PRODUCT_DIR, BRAND_DIR, MANUFACTURER_DIR, CATEGORY_DIR].forEach((dir) => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -30,6 +31,8 @@ const storage = multer.diskStorage({
       uploadPath = TEMP_DIR;
     } else if (req.baseUrl.includes('brands')) {
       uploadPath = BRAND_DIR;
+    } else if (req.baseUrl.includes('manufacturers')) {
+      uploadPath = MANUFACTURER_DIR;
     } else if (req.baseUrl.includes('categories')) {
       uploadPath = CATEGORY_DIR;
     }
@@ -81,5 +84,6 @@ module.exports = {
   ]),
   // Convenience aliases for brand/category single image uploads
   uploadBrandImage: upload.single('logo'),
+  uploadManufacturerImage: upload.single('brand_logo'),
   uploadCategoryImage: upload.single('image')
 };

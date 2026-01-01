@@ -86,6 +86,8 @@ const productValidators = {
     body('weight').optional().isFloat({ min: 0 }).withMessage('Weight must be a positive number'),
     body('is_active').optional().isBoolean().withMessage('is_active must be boolean'),
     body('is_featured').optional().isBoolean().withMessage('is_featured must be boolean'),
+    body('is_best_seller').optional().isBoolean().withMessage('is_best_seller must be boolean'),
+    body('is_offer').optional().isBoolean().withMessage('is_offer must be boolean'),
     body('requires_prescription').optional().isBoolean().withMessage('requires_prescription must be boolean')
   ],
   update: [
@@ -104,6 +106,8 @@ const productValidators = {
     body('weight').optional().isFloat({ min: 0 }).withMessage('Weight must be a positive number'),
     body('is_active').optional().isBoolean().withMessage('is_active must be boolean'),
     body('is_featured').optional().isBoolean().withMessage('is_featured must be boolean'),
+    body('is_best_seller').optional().isBoolean().withMessage('is_best_seller must be boolean'),
+    body('is_offer').optional().isBoolean().withMessage('is_offer must be boolean'),
     body('requires_prescription').optional().isBoolean().withMessage('requires_prescription must be boolean')
   ],
   updateStock: [

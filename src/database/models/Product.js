@@ -147,6 +147,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
+    is_best_seller: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    is_offer: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     requires_prescription: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
@@ -222,6 +230,8 @@ module.exports = (sequelize, DataTypes) => {
       { fields: ['brand'] },
       { fields: ['is_active'] },
       { fields: ['is_featured'] },
+      { fields: ['is_best_seller'] },
+      { fields: ['is_offer'] },
       { fields: ['requires_prescription'] },
       { fields: ['created_at'] },
       { fields: ['deleted_at'] }

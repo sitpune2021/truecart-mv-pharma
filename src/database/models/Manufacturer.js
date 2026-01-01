@@ -19,6 +19,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    brand_name: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    brand_logo_url: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     logo_url: {
       type: DataTypes.TEXT,
       allowNull: true

@@ -9,7 +9,7 @@ const SupplierController = require('../../controllers/admin/supplier.controller'
 const BrandController = require('../../controllers/admin/brand.controller');
 const CategoryController = require('../../controllers/admin/category.controller');
 const ProductNameController = require('../../controllers/admin/productName.controller');
-const { uploadBrandImage, uploadCategoryImage } = require('../../middleware/upload/imageUpload');
+const { uploadBrandImage, uploadCategoryImage, uploadManufacturerImage } = require('../../middleware/upload/imageUpload');
 
 const {
   manufacturerValidation,
@@ -106,6 +106,7 @@ router.get('/manufacturers/slug/:slug',
 router.post('/manufacturers',
   authenticate,
   authorize('manufacturers:create'),
+  uploadManufacturerImage,
   manufacturerValidation.create,
   validate,
   ManufacturerController.createManufacturer
@@ -114,6 +115,7 @@ router.post('/manufacturers',
 router.put('/manufacturers/:id',
   authenticate,
   authorize('manufacturers:update'),
+  uploadManufacturerImage,
   manufacturerValidation.update,
   validate,
   ManufacturerController.updateManufacturer

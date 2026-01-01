@@ -20,6 +20,8 @@ class ProductService extends BaseService {
       brand = null,
       isActive = null,
       isFeatured = null,
+      isBestSeller = null,
+      isOffer = null,
       sortBy = 'created_at',
       sortOrder = 'DESC'
     } = options;
@@ -48,6 +50,14 @@ class ProductService extends BaseService {
 
     if (isFeatured !== null) {
       where.is_featured = isFeatured;
+    }
+
+    if (isBestSeller !== null) {
+      where.is_best_seller = isBestSeller;
+    }
+
+    if (isOffer !== null) {
+      where.is_offer = isOffer;
     }
 
     const result = await this.findAll({
@@ -179,10 +189,12 @@ class ProductService extends BaseService {
    * Get product statistics
    */
   async getProductStats() {
-    const [total, active, featured, lowStock, outOfStock] = await Promise.all([
+    const [total, active, featured, bestSeller, offer, lowStock, outOfStock] = await Promise.all([
       Product.count(),
       Product.count({ where: { is_active: true } }),
       Product.count({ where: { is_featured: true } }),
+      Product.count({ where: { is_best_seller: true } }),
+      Product.count({ where: { is_offer: true } }),
       Product.count({
         where: {
           stock_quantity: {
@@ -198,6 +210,8 @@ class ProductService extends BaseService {
       total,
       active,
       featured,
+      bestSeller,
+      offer,
       lowStock,
       outOfStock
     };

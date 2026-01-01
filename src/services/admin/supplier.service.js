@@ -1,15 +1,15 @@
 const BaseService = require('../../utils/baseService');
-const { Marketer, Product, User } = require('../../database/models');
+const { Supplier, Product, User } = require('../../database/models');
 const { NotFoundError, ConflictError } = require('../../utils/errors');
 const { generateUniqueSlug } = require('../../utils/slug.utils');
 const { Op } = require('sequelize');
 
-class MarketerService extends BaseService {
+class SupplierService extends BaseService {
   constructor() {
-    super(Marketer, 'Marketer');
+    super(Supplier, 'Supplier');
   }
 
-  async getAllMarketers(options = {}) {
+  async getAllSuppliers(options = {}) {
     const {
       page = 1,
       limit = 20,
@@ -55,8 +55,8 @@ class MarketerService extends BaseService {
     return result;
   }
 
-  async getMarketerById(id) {
-    const marketer = await Marketer.findByPk(id, {
+  async getSupplierById(id) {
+    const supplier = await Supplier.findByPk(id, {
       include: [
         {
           model: User,
@@ -71,88 +71,88 @@ class MarketerService extends BaseService {
       ]
     });
 
-    if (!marketer) {
-      throw new NotFoundError('Marketer not found');
+    if (!supplier) {
+      throw new NotFoundError('Supplier not found');
     }
 
-    return marketer;
+    return supplier;
   }
 
-  async getMarketerBySlug(slug) {
-    const marketer = await Marketer.findOne({
+  async getSupplierBySlug(slug) {
+    const supplier = await Supplier.findOne({
       where: { slug }
     });
 
-    if (!marketer) {
-      throw new NotFoundError('Marketer not found');
+    if (!supplier) {
+      throw new NotFoundError('Supplier not found');
     }
 
-    return marketer;
+    return supplier;
   }
 
-  async createMarketer(data, createdBy) {
+  async createSupplier(data, createdBy) {
     const { name } = data;
 
-    const existing = await Marketer.findOne({ where: { name } });
+    const existing = await Supplier.findOne({ where: { name } });
     if (existing) {
-      throw new ConflictError('Marketer with this name already exists');
+      throw new ConflictError('Supplier with this name already exists');
     }
 
-    const slug = await generateUniqueSlug(name, Marketer);
+    const slug = await generateUniqueSlug(name, Supplier);
 
-    const marketer = await Marketer.create({
+    const supplier = await Supplier.create({
       ...data,
       slug,
       created_by: createdBy
     });
 
-    return this.getMarketerById(marketer.id);
+    return this.getSupplierById(supplier.id);
   }
 
-  async updateMarketer(id, data, updatedBy) {
-    const marketer = await Marketer.findByPk(id);
-    if (!marketer) {
-      throw new NotFoundError('Marketer not found');
+  async updateSupplier(id, data, updatedBy) {
+    const supplier = await Supplier.findByPk(id);
+    if (!supplier) {
+      throw new NotFoundError('Supplier not found');
     }
 
-    if (data.name && data.name !== marketer.name) {
-      const existing = await Marketer.findOne({ where: { name: data.name } });
+    if (data.name && data.name !== supplier.name) {
+      const existing = await Supplier.findOne({ where: { name: data.name } });
       if (existing) {
-        throw new ConflictError('Marketer name already in use');
+        throw new ConflictError('Supplier name already in use');
       }
-      data.slug = await generateUniqueSlug(data.name, Marketer, id);
+      data.slug = await generateUniqueSlug(data.name, Supplier, id);
     }
 
-    await marketer.update({
+    await supplier.update({
       ...data,
       updated_by: updatedBy
     });
 
-    return this.getMarketerById(id);
+    return this.getSupplierById(id);
   }
 
-  async deleteMarketer(id, deletedBy) {
-    const marketer = await Marketer.findByPk(id);
-    if (!marketer) {
-      throw new NotFoundError('Marketer not found');
+  async deleteSupplier(id, deletedBy) {
+    const supplier = await Supplier.findByPk(id);
+    if (!supplier) {
+      throw new NotFoundError('Supplier not found');
     }
 
-    const productsCount = await Product.count({ where: { marketer_id: id } });
+    const productsCount = await Product.count({ where: { supplier_id: id } });
     if (productsCount > 0) {
-      throw new ConflictError(`Cannot delete marketer. ${productsCount} product(s) are associated with it.`);
+      throw new ConflictError(`Cannot delete supplier. ${productsCount} product(s) are associated with it.`);
     }
 
-    await marketer.update({ deleted_by: deletedBy });
-    await marketer.destroy();
+    await supplier.update({ deleted_by: deletedBy });
+    await supplier.destroy();
 
     return true;
   }
 
-  async getMarketerStats() {
+  async getSupplierStats() {
     const [total, active, withProducts] = await Promise.all([
-      Marketer.count(),
-      Marketer.count({ where: { is_active: true } }),
-      Marketer.count({
+      Supplier.count(),
+      Supplier.count({ where: { is_active: true } }),
+      Supplier.count({
         include: [{
           model: Product,
           as: 'products',
@@ -169,4 +169,4 @@ class MarketerService extends BaseService {
   }
 }
 
-module.exports = new MarketerService();
+module.exports = new SupplierService();

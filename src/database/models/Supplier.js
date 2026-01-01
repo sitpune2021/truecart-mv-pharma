@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const Marketer = sequelize.define('Marketer', {
+  const Supplier = sequelize.define('Supplier', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     }
   }, {
-    tableName: 'tc_marketers',
+    tableName: 'tc_suppliers',
     timestamps: true,
     underscored: true,
     paranoid: true,
@@ -97,22 +97,22 @@ module.exports = (sequelize, DataTypes) => {
     ]
   });
 
-  Marketer.associate = (models) => {
-    Marketer.hasMany(models.Product, {
-      foreignKey: 'marketer_id',
+  Supplier.associate = (models) => {
+    Supplier.hasMany(models.Product, {
+      foreignKey: 'supplier_id',
       as: 'products'
     });
 
-    Marketer.belongsTo(models.User, {
+    Supplier.belongsTo(models.User, {
       foreignKey: 'created_by',
       as: 'creator'
     });
 
-    Marketer.belongsTo(models.User, {
+    Supplier.belongsTo(models.User, {
       foreignKey: 'updated_by',
       as: 'updater'
     });
   };
 
-  return Marketer;
+  return Supplier;
 };

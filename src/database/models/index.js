@@ -44,7 +44,7 @@ db.DataChangeHistory = require('./DataChangeHistory')(sequelize, Sequelize.DataT
 
 // Import master data models
 db.Manufacturer = require('./Manufacturer')(sequelize, Sequelize.DataTypes);
-db.Marketer = require('./Marketer')(sequelize, Sequelize.DataTypes);
+db.Supplier = require('./Supplier')(sequelize, Sequelize.DataTypes);
 db.Brand = require('./Brand')(sequelize, Sequelize.DataTypes);
 db.Category = require('./Category')(sequelize, Sequelize.DataTypes);
 db.ProductName = require('./ProductName')(sequelize, Sequelize.DataTypes);

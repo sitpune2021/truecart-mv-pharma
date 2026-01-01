@@ -5,7 +5,7 @@ const { authorize } = require('../../middleware/auth/authorize');
 const validate = require('../../middleware/validation/validate');
 
 const ManufacturerController = require('../../controllers/admin/manufacturer.controller');
-const MarketerController = require('../../controllers/admin/marketer.controller');
+const SupplierController = require('../../controllers/admin/supplier.controller');
 const BrandController = require('../../controllers/admin/brand.controller');
 const CategoryController = require('../../controllers/admin/category.controller');
 const ProductNameController = require('../../controllers/admin/productName.controller');
@@ -13,64 +13,64 @@ const { uploadBrandImage, uploadCategoryImage } = require('../../middleware/uplo
 
 const {
   manufacturerValidation,
-  marketerValidation,
+  supplierValidation,
   brandValidation,
   categoryValidation,
   productNameValidation
 } = require('../../validators/masters.validator');
 
-// ==================== MARKETERS ====================
+// ==================== SUPPLIERS ====================
 
-router.get('/marketers',
+router.get('/suppliers',
   authenticate,
-  authorize('marketers:read'),
-  MarketerController.getAllMarketers
+  authorize('suppliers:read'),
+  SupplierController.getAllSuppliers
 );
 
-router.get('/marketers/stats',
+router.get('/suppliers/stats',
   authenticate,
-  authorize('marketers:read'),
-  MarketerController.getMarketerStats
+  authorize('suppliers:read'),
+  SupplierController.getSupplierStats
 );
 
-router.get('/marketers/:id',
+router.get('/suppliers/:id',
   authenticate,
-  authorize('marketers:read'),
-  marketerValidation.getById,
+  authorize('suppliers:read'),
+  supplierValidation.getById,
   validate,
-  MarketerController.getMarketerById
+  SupplierController.getSupplierById
 );
 
-router.get('/marketers/slug/:slug',
+router.get('/suppliers/slug/:slug',
   authenticate,
-  authorize('marketers:read'),
-  marketerValidation.getBySlug,
+  authorize('suppliers:read'),
+  supplierValidation.getBySlug,
   validate,
-  MarketerController.getMarketerBySlug
+  SupplierController.getSupplierBySlug
 );
 
-router.post('/marketers',
+router.post('/suppliers',
   authenticate,
-  authorize('marketers:create'),
-  marketerValidation.create,
+  authorize('suppliers:create'),
+  supplierValidation.create,
   validate,
-  MarketerController.createMarketer
+  SupplierController.createSupplier
 );
 
-router.put('/marketers/:id',
+router.put('/suppliers/:id',
   authenticate,
-  authorize('marketers:update'),
-  marketerValidation.update,
+  authorize('suppliers:update'),
+  supplierValidation.update,
   validate,
-  MarketerController.updateMarketer
+  SupplierController.updateSupplier
 );
 
-router.delete('/marketers/:id',
+router.delete('/suppliers/:id',
   authenticate,
-  authorize('marketers:delete'),
-  marketerValidation.getById,
+  authorize('suppliers:delete'),
+  supplierValidation.getById,
   validate,
-  MarketerController.deleteMarketer
+  SupplierController.deleteSupplier
 );
 
 // ==================== MANUFACTURERS ====================

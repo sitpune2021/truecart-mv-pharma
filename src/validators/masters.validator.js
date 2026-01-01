@@ -1,10 +1,10 @@
 const { body, param, query } = require('express-validator');
 
-const marketerValidation = {
+const supplierValidation = {
   create: [
     body('name')
       .trim()
-      .notEmpty().withMessage('Marketer name is required')
+      .notEmpty().withMessage('Supplier name is required')
       .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
     body('description')
       .optional()
@@ -36,11 +36,11 @@ const marketerValidation = {
   ],
 
   update: [
-    param('id').isInt({ min: 1 }).withMessage('Invalid marketer ID'),
+    param('id').isInt({ min: 1 }).withMessage('Invalid supplier ID'),
     body('name')
       .optional()
       .trim()
-      .notEmpty().withMessage('Marketer name cannot be empty')
+      .notEmpty().withMessage('Supplier name cannot be empty')
       .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
     body('description')
       .optional()
@@ -72,7 +72,7 @@ const marketerValidation = {
   ],
 
   getById: [
-    param('id').isInt({ min: 1 }).withMessage('Invalid marketer ID')
+    param('id').isInt({ min: 1 }).withMessage('Invalid supplier ID')
   ],
 
   getBySlug: [
@@ -397,7 +397,7 @@ const productNameValidation = {
 };
 
 module.exports = {
-  marketerValidation,
+  supplierValidation,
   manufacturerValidation,
   brandValidation,
   categoryValidation,

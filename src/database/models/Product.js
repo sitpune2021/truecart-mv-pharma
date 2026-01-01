@@ -47,11 +47,11 @@ module.exports = (sequelize, DataTypes) => {
         key: 'id'
       }
     },
-    marketer_id: {
+    supplier_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'tc_marketers',
+        model: 'tc_suppliers',
         key: 'id'
       }
     },
@@ -216,7 +216,7 @@ module.exports = (sequelize, DataTypes) => {
       { fields: ['product_name_id'] },
       { fields: ['brand_id'] },
       { fields: ['manufacturer_id'] },
-      { fields: ['marketer_id'] },
+      { fields: ['supplier_id'] },
       { fields: ['category_id'] },
       { fields: ['category'] },
       { fields: ['brand'] },
@@ -244,9 +244,9 @@ module.exports = (sequelize, DataTypes) => {
       as: 'manufacturerDetails'
     });
 
-    Product.belongsTo(models.Marketer, {
-      foreignKey: 'marketer_id',
-      as: 'marketerDetails'
+    Product.belongsTo(models.Supplier, {
+      foreignKey: 'supplier_id',
+      as: 'supplierDetails'
     });
 
     Product.belongsTo(models.Category, {

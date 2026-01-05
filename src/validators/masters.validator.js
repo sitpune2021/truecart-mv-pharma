@@ -412,10 +412,124 @@ const productNameValidation = {
   ]
 };
 
+const saltValidation = {
+  create: [
+    body('name')
+      .trim()
+      .notEmpty().withMessage('Salt name is required')
+      .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 5000 }).withMessage('Description must not exceed 5000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean'),
+    body('meta_title')
+      .optional()
+      .trim()
+      .isLength({ max: 255 }).withMessage('Meta title must not exceed 255 characters'),
+    body('meta_description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Meta description must not exceed 1000 characters')
+  ],
+
+  update: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid salt ID'),
+    body('name')
+      .optional()
+      .trim()
+      .notEmpty().withMessage('Salt name cannot be empty')
+      .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 5000 }).withMessage('Description must not exceed 5000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean'),
+    body('meta_title')
+      .optional()
+      .trim()
+      .isLength({ max: 255 }).withMessage('Meta title must not exceed 255 characters'),
+    body('meta_description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Meta description must not exceed 1000 characters')
+  ],
+
+  getById: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid salt ID')
+  ],
+
+  getBySlug: [
+    param('slug').trim().notEmpty().withMessage('Slug is required')
+  ]
+};
+
+const dosageValidation = {
+  create: [
+    body('name')
+      .trim()
+      .notEmpty().withMessage('Dosage name is required')
+      .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 5000 }).withMessage('Description must not exceed 5000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean'),
+    body('meta_title')
+      .optional()
+      .trim()
+      .isLength({ max: 255 }).withMessage('Meta title must not exceed 255 characters'),
+    body('meta_description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Meta description must not exceed 1000 characters')
+  ],
+
+  update: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid dosage ID'),
+    body('name')
+      .optional()
+      .trim()
+      .notEmpty().withMessage('Dosage name cannot be empty')
+      .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 5000 }).withMessage('Description must not exceed 5000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean'),
+    body('meta_title')
+      .optional()
+      .trim()
+      .isLength({ max: 255 }).withMessage('Meta title must not exceed 255 characters'),
+    body('meta_description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Meta description must not exceed 1000 characters')
+  ],
+
+  getById: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid dosage ID')
+  ],
+
+  getBySlug: [
+    param('slug').trim().notEmpty().withMessage('Slug is required')
+  ]
+};
+
 module.exports = {
   supplierValidation,
   manufacturerValidation,
   brandValidation,
   categoryValidation,
-  productNameValidation
+  productNameValidation,
+  saltValidation,
+  dosageValidation
 };

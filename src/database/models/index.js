@@ -16,7 +16,7 @@ const sequelize = new Sequelize(
     pool: dbConfig.pool,
     dialectOptions: dbConfig.dialectOptions,
     define: {
-      schema: 'public', 
+      schema: 'public',
       underscored: true,
       paranoid: true,
       freezeTableName: false
@@ -48,6 +48,8 @@ db.Supplier = require('./Supplier')(sequelize, Sequelize.DataTypes);
 db.Brand = require('./Brand')(sequelize, Sequelize.DataTypes);
 db.Category = require('./Category')(sequelize, Sequelize.DataTypes);
 db.ProductName = require('./ProductName')(sequelize, Sequelize.DataTypes);
+db.Salt = require('./Salt')(sequelize, Sequelize.DataTypes);
+db.Dosage = require('./Dosage')(sequelize, Sequelize.DataTypes);
 db.ProductVariant = require('./ProductVariant')(sequelize, Sequelize.DataTypes);
 
 // Import product model

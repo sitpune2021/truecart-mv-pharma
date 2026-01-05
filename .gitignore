@@ -53,7 +53,10 @@ ecosystem.config.js
 # # Redis dump
 dump.rdb
 
-
+scripts/postman
+scripts/utilities
+scripts/database/create-salt-dosage-tables.sql
+docs/
 
 # --------------------
 # Ignore specific folders completely

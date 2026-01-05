@@ -9,6 +9,8 @@ const SupplierController = require('../../controllers/admin/supplier.controller'
 const BrandController = require('../../controllers/admin/brand.controller');
 const CategoryController = require('../../controllers/admin/category.controller');
 const ProductNameController = require('../../controllers/admin/productName.controller');
+const SaltController = require('../../controllers/admin/salt.controller');
+const DosageController = require('../../controllers/admin/dosage.controller');
 const { uploadBrandImage, uploadCategoryImage, uploadManufacturerImage } = require('../../middleware/upload/imageUpload');
 
 const {
@@ -16,7 +18,9 @@ const {
   supplierValidation,
   brandValidation,
   categoryValidation,
-  productNameValidation
+  productNameValidation,
+  saltValidation,
+  dosageValidation
 } = require('../../validators/masters.validator');
 
 // ==================== SUPPLIERS ====================
@@ -319,6 +323,114 @@ router.delete('/product-names/:id',
   productNameValidation.getById,
   validate,
   ProductNameController.deleteProductName
+);
+
+// ==================== SALTS ====================
+
+router.get('/salts',
+  authenticate,
+  authorize('salts:read'),
+  SaltController.getAllSalts
+);
+
+router.get('/salts/stats',
+  authenticate,
+  authorize('salts:read'),
+  SaltController.getSaltStats
+);
+
+router.get('/salts/:id',
+  authenticate,
+  authorize('salts:read'),
+  saltValidation.getById,
+  validate,
+  SaltController.getSaltById
+);
+
+router.get('/salts/slug/:slug',
+  authenticate,
+  authorize('salts:read'),
+  saltValidation.getBySlug,
+  validate,
+  SaltController.getSaltBySlug
+);
+
+router.post('/salts',
+  authenticate,
+  authorize('salts:create'),
+  saltValidation.create,
+  validate,
+  SaltController.createSalt
+);
+
+router.put('/salts/:id',
+  authenticate,
+  authorize('salts:update'),
+  saltValidation.update,
+  validate,
+  SaltController.updateSalt
+);
+
+router.delete('/salts/:id',
+  authenticate,
+  authorize('salts:delete'),
+  saltValidation.getById,
+  validate,
+  SaltController.deleteSalt
+);
+
+// ==================== DOSAGES ====================
+
+router.get('/dosages',
+  authenticate,
+  authorize('dosages:read'),
+  DosageController.getAllDosages
+);
+
+router.get('/dosages/stats',
+  authenticate,
+  authorize('dosages:read'),
+  DosageController.getDosageStats
+);
+
+router.get('/dosages/:id',
+  authenticate,
+  authorize('dosages:read'),
+  dosageValidation.getById,
+  validate,
+  DosageController.getDosageById
+);
+
+router.get('/dosages/slug/:slug',
+  authenticate,
+  authorize('dosages:read'),
+  dosageValidation.getBySlug,
+  validate,
+  DosageController.getDosageBySlug
+);
+
+router.post('/dosages',
+  authenticate,
+  authorize('dosages:create'),
+  dosageValidation.create,
+  validate,
+  DosageController.createDosage
+);
+
+router.put('/dosages/:id',
+  authenticate,
+  authorize('dosages:update'),
+  dosageValidation.update,
+  validate,
+  DosageController.updateDosage
+);
+
+router.delete('/dosages/:id',
+  authenticate,
+  authorize('dosages:delete'),
+  dosageValidation.getById,
+  validate,
+  DosageController.deleteDosage
 );
 
 module.exports = router;

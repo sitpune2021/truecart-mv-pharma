@@ -11,6 +11,9 @@ const CategoryController = require('../../controllers/admin/category.controller'
 const ProductNameController = require('../../controllers/admin/productName.controller');
 const SaltController = require('../../controllers/admin/salt.controller');
 const DosageController = require('../../controllers/admin/dosage.controller');
+const UnitTypeController = require('../../controllers/admin/unitType.controller');
+const AttributeController = require('../../controllers/admin/attribute.controller');
+const GSTController = require('../../controllers/admin/gst.controller');
 const { uploadBrandImage, uploadCategoryImage, uploadManufacturerImage } = require('../../middleware/upload/imageUpload');
 
 const {
@@ -20,7 +23,10 @@ const {
   categoryValidation,
   productNameValidation,
   saltValidation,
-  dosageValidation
+  dosageValidation,
+  unitTypeValidation,
+  attributeValidation,
+  gstValidation
 } = require('../../validators/masters.validator');
 
 // ==================== SUPPLIERS ====================
@@ -431,6 +437,160 @@ router.delete('/dosages/:id',
   dosageValidation.getById,
   validate,
   DosageController.deleteDosage
+);
+
+// ==================== UNIT TYPES ====================
+
+router.get('/unit-types',
+  authenticate,
+  authorize('unit_types:read'),
+  UnitTypeController.getAllUnitTypes
+);
+
+router.get('/unit-types/stats',
+  authenticate,
+  authorize('unit_types:read'),
+  UnitTypeController.getUnitTypeStats
+);
+
+router.get('/unit-types/:id',
+  authenticate,
+  authorize('unit_types:read'),
+  unitTypeValidation.getById,
+  validate,
+  UnitTypeController.getUnitTypeById
+);
+
+router.get('/unit-types/slug/:slug',
+  authenticate,
+  authorize('unit_types:read'),
+  unitTypeValidation.getBySlug,
+  validate,
+  UnitTypeController.getUnitTypeBySlug
+);
+
+router.post('/unit-types',
+  authenticate,
+  authorize('unit_types:create'),
+  unitTypeValidation.create,
+  validate,
+  UnitTypeController.createUnitType
+);
+
+router.put('/unit-types/:id',
+  authenticate,
+  authorize('unit_types:update'),
+  unitTypeValidation.update,
+  validate,
+  UnitTypeController.updateUnitType
+);
+
+router.delete('/unit-types/:id',
+  authenticate,
+  authorize('unit_types:delete'),
+  unitTypeValidation.getById,
+  validate,
+  UnitTypeController.deleteUnitType
+);
+
+// ==================== ATTRIBUTES ====================
+
+router.get('/attributes',
+  authenticate,
+  authorize('attributes:read'),
+  AttributeController.getAllAttributes
+);
+
+router.get('/attributes/stats',
+  authenticate,
+  authorize('attributes:read'),
+  AttributeController.getAttributeStats
+);
+
+router.get('/attributes/:id',
+  authenticate,
+  authorize('attributes:read'),
+  attributeValidation.getById,
+  validate,
+  AttributeController.getAttributeById
+);
+
+router.get('/attributes/slug/:slug',
+  authenticate,
+  authorize('attributes:read'),
+  attributeValidation.getBySlug,
+  validate,
+  AttributeController.getAttributeBySlug
+);
+
+router.post('/attributes',
+  authenticate,
+  authorize('attributes:create'),
+  attributeValidation.create,
+  validate,
+  AttributeController.createAttribute
+);
+
+router.put('/attributes/:id',
+  authenticate,
+  authorize('attributes:update'),
+  attributeValidation.update,
+  validate,
+  AttributeController.updateAttribute
+);
+
+router.delete('/attributes/:id',
+  authenticate,
+  authorize('attributes:delete'),
+  attributeValidation.getById,
+  validate,
+  AttributeController.deleteAttribute
+);
+
+// ==================== GST ====================
+
+router.get('/gst',
+  authenticate,
+  authorize('gst:read'),
+  GSTController.getAllGST
+);
+
+router.get('/gst/stats',
+  authenticate,
+  authorize('gst:read'),
+  GSTController.getGSTStats
+);
+
+router.get('/gst/:id',
+  authenticate,
+  authorize('gst:read'),
+  gstValidation.getById,
+  validate,
+  GSTController.getGSTById
+);
+
+router.post('/gst',
+  authenticate,
+  authorize('gst:create'),
+  gstValidation.create,
+  validate,
+  GSTController.createGST
+);
+
+router.put('/gst/:id',
+  authenticate,
+  authorize('gst:update'),
+  gstValidation.update,
+  validate,
+  GSTController.updateGST
+);
+
+router.delete('/gst/:id',
+  authenticate,
+  authorize('gst:delete'),
+  gstValidation.getById,
+  validate,
+  GSTController.deleteGST
 );
 
 module.exports = router;

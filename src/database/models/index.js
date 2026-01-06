@@ -50,6 +50,9 @@ db.Category = require('./Category')(sequelize, Sequelize.DataTypes);
 db.ProductName = require('./ProductName')(sequelize, Sequelize.DataTypes);
 db.Salt = require('./Salt')(sequelize, Sequelize.DataTypes);
 db.Dosage = require('./Dosage')(sequelize, Sequelize.DataTypes);
+db.UnitType = require('./UnitType')(sequelize, Sequelize.DataTypes);
+db.Attribute = require('./Attribute')(sequelize, Sequelize.DataTypes);
+db.GST = require('./GST')(sequelize, Sequelize.DataTypes);
 db.ProductVariant = require('./ProductVariant')(sequelize, Sequelize.DataTypes);
 
 // Import product model

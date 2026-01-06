@@ -524,6 +524,151 @@ const dosageValidation = {
   ]
 };
 
+const unitTypeValidation = {
+  create: [
+    body('name')
+      .trim()
+      .notEmpty().withMessage('Unit Type name is required')
+      .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 5000 }).withMessage('Description must not exceed 5000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean'),
+    body('meta_title')
+      .optional()
+      .trim()
+      .isLength({ max: 255 }).withMessage('Meta title must not exceed 255 characters'),
+    body('meta_description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Meta description must not exceed 1000 characters')
+  ],
+
+  update: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid unit type ID'),
+    body('name')
+      .optional()
+      .trim()
+      .notEmpty().withMessage('Unit Type name cannot be empty')
+      .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 5000 }).withMessage('Description must not exceed 5000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean'),
+    body('meta_title')
+      .optional()
+      .trim()
+      .isLength({ max: 255 }).withMessage('Meta title must not exceed 255 characters'),
+    body('meta_description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Meta description must not exceed 1000 characters')
+  ],
+
+  getById: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid unit type ID')
+  ],
+
+  getBySlug: [
+    param('slug').trim().notEmpty().withMessage('Slug is required')
+  ]
+};
+
+const attributeValidation = {
+  create: [
+    body('name')
+      .trim()
+      .notEmpty().withMessage('Attribute name is required')
+      .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 5000 }).withMessage('Description must not exceed 5000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean'),
+    body('meta_title')
+      .optional()
+      .trim()
+      .isLength({ max: 255 }).withMessage('Meta title must not exceed 255 characters'),
+    body('meta_description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Meta description must not exceed 1000 characters')
+  ],
+
+  update: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid attribute ID'),
+    body('name')
+      .optional()
+      .trim()
+      .notEmpty().withMessage('Attribute name cannot be empty')
+      .isLength({ min: 2, max: 255 }).withMessage('Name must be between 2 and 255 characters'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 5000 }).withMessage('Description must not exceed 5000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean'),
+    body('meta_title')
+      .optional()
+      .trim()
+      .isLength({ max: 255 }).withMessage('Meta title must not exceed 255 characters'),
+    body('meta_description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Meta description must not exceed 1000 characters')
+  ],
+
+  getById: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid attribute ID')
+  ],
+
+  getBySlug: [
+    param('slug').trim().notEmpty().withMessage('Slug is required')
+  ]
+};
+
+const gstValidation = {
+  create: [
+    body('value')
+      .notEmpty().withMessage('GST value is required')
+      .isFloat({ min: 0, max: 100 }).withMessage('GST value must be between 0 and 100'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Description must not exceed 1000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean')
+  ],
+
+  update: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid GST ID'),
+    body('value')
+      .optional()
+      .isFloat({ min: 0, max: 100 }).withMessage('GST value must be between 0 and 100'),
+    body('description')
+      .optional()
+      .trim()
+      .isLength({ max: 1000 }).withMessage('Description must not exceed 1000 characters'),
+    body('is_active')
+      .optional()
+      .isBoolean().withMessage('is_active must be a boolean')
+  ],
+
+  getById: [
+    param('id').isInt({ min: 1 }).withMessage('Invalid GST ID')
+  ]
+};
+
 module.exports = {
   supplierValidation,
   manufacturerValidation,
@@ -531,5 +676,8 @@ module.exports = {
   categoryValidation,
   productNameValidation,
   saltValidation,
-  dosageValidation
+  dosageValidation,
+  unitTypeValidation,
+  attributeValidation,
+  gstValidation
 };

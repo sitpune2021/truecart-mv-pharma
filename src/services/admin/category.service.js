@@ -171,7 +171,7 @@ class CategoryService extends BaseService {
 
   async getCategoriesByLevel(level, parentId = null) {
     const where = { level, is_active: true };
-    
+
     if (parentId) {
       where.parent_id = parentId;
     } else if (level === 1) {
@@ -207,10 +207,10 @@ class CategoryService extends BaseService {
     }
 
     const subCategories = await Category.findAll({
-      where: { 
+      where: {
         parent_id: parentId,
         level: parent.level + 1,
-        is_active: true 
+        is_active: true
       },
       order: [['name', 'ASC']],
       attributes: ['id', 'name', 'slug', 'level', 'parent_id', 'icon', 'image_url']
@@ -278,15 +278,15 @@ class CategoryService extends BaseService {
       if (category.parent_id) {
         parent = await Category.findByPk(category.parent_id);
       }
-      
+
       const newSlug = generateCategorySlug(data.name, parent);
-      const existingSlug = await Category.findOne({ 
-        where: { 
+      const existingSlug = await Category.findOne({
+        where: {
           slug: newSlug,
           id: { [Op.ne]: id }
-        } 
+        }
       });
-      
+
       if (existingSlug) {
         data.slug = await generateUniqueSlug(newSlug, Category, id);
       } else {
@@ -303,22 +303,51 @@ class CategoryService extends BaseService {
   }
 
   async deleteCategory(id, deletedBy) {
-    const category = await Category.findByPk(id);
+    const category = await this.getCategoryById(id);
     if (!category) {
       throw new NotFoundError('Category not found');
     }
 
-    const childrenCount = await Category.count({ where: { parent_id: id } });
-    if (childrenCount > 0) {
-      throw new ConflictError(`Cannot delete category. ${childrenCount} sub-category(ies) exist.`);
-    }
-
+    // Check for products in THIS category
     const productsCount = await Product.count({ where: { category_id: id } });
     if (productsCount > 0) {
       throw new ConflictError(`Cannot delete category. ${productsCount} product(s) are associated with it.`);
     }
 
-    await category.update({ deleted_by: deletedBy });
+    // Recursive function to soft delete children
+    const softDeleteChildren = async (parentId) => {
+      const children = await Category.findAll({
+        where: { parent_id: parentId },
+        paranoid: false // Include already soft-deleted if any, though usually not needed
+      });
+
+      for (const child of children) {
+        // First, check if this child has products (optional: usually we block if ANY child has products to prevent data loss)
+        const childProducts = await Product.count({ where: { category_id: child.id } });
+        if (childProducts > 0) {
+          throw new ConflictError(`Cannot delete category hierarchy. Child category "${child.name}" has ${childProducts} products.`);
+        }
+
+        // Recursively delete its children
+        await softDeleteChildren(child.id);
+
+        // Soft delete the child
+        await child.update({
+          deleted_by: deletedBy,
+          is_active: false // Also deactivate
+        });
+        await child.destroy();
+      }
+    };
+
+    // Soft delete all children recursively
+    await softDeleteChildren(id);
+
+    // Soft delete the main category
+    await category.update({
+      deleted_by: deletedBy,
+      is_active: false
+    });
     await category.destroy();
 
     return true;

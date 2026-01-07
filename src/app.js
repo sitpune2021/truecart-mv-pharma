@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const fs = require('fs');
 const { requestLogger } = require('./middleware/utils/requestLogger');
 const { errorHandler, notFoundHandler } = require('./middleware/utils/errorHandler');
 const { apiLimiter } = require('./middleware/security/rateLimiter');
@@ -40,6 +41,15 @@ const uploadsDir = process.env.UPLOAD_PATH
   : path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsDir));
 
+// Static file serving for built frontend (Vite build output) placed in /public
+const frontendBuildPath = path.join(__dirname, '../public');
+if (fs.existsSync(frontendBuildPath)) {
+  app.use(express.static(frontendBuildPath));
+} else {
+  // Keep the server running even if the build is not present
+  console.warn(`Frontend build folder not found at ${frontendBuildPath}. Place your Vite build output here.`);
+}
+
 // Rate limiting (apply to all routes)
 app.use('/api', apiLimiter);
 
@@ -58,6 +68,20 @@ app.use('/api/auth', authRoutes);
 app.use('/api/auth/customer', customerAuthRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/vendor', vendorRoutes);
+
+// SPA fallback for frontend routes (serves index.html for non-API paths)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    return next();
+  }
+
+  const indexFile = path.join(frontendBuildPath, 'index.html');
+  if (!fs.existsSync(indexFile)) {
+    return next();
+  }
+
+  res.sendFile(indexFile);
+});
 
 // 404 handler
 app.use(notFoundHandler);

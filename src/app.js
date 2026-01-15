@@ -13,6 +13,7 @@ const authRoutes = require('./routes/auth/auth.routes');
 const customerAuthRoutes = require('./routes/customer/customerAuth.routes');
 const adminRoutes = require('./routes/admin/admin.routes');
 const vendorRoutes = require('./routes/vendor/vendor.routes');
+const approvalRoutes = require('./routes/approval/approval.routes');
 
 // Create Express app
 const app = express();
@@ -68,6 +69,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/auth/customer', customerAuthRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/vendor', vendorRoutes);
+app.use('/api/approvals', approvalRoutes);
 
 // SPA fallback for frontend routes (serves index.html for non-API paths)
 app.get('*', (req, res, next) => {

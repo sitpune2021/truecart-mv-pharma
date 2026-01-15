@@ -29,7 +29,7 @@ const consoleFormat = winston.format.combine(
   })
 );
 
-// Create logger instance
+// Create logger instance (single files, no daily rotation)
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: logFormat,
@@ -38,23 +38,11 @@ const logger = winston.createLogger({
     // Error logs
     new winston.transports.File({
       filename: path.join(logsDir, 'error.log'),
-      level: 'error',
-      maxsize: 10485760, // 10MB
-      maxFiles: 10,
-      tailable: true
+      level: 'error'
     }),
     // Combined logs
     new winston.transports.File({
-      filename: path.join(logsDir, 'combined.log'),
-      maxsize: 10485760, // 10MB
-      maxFiles: 10,
-      tailable: true
-    }),
-    // Daily rotation for production
-    new winston.transports.File({
-      filename: path.join(logsDir, `app-${new Date().toISOString().split('T')[0]}.log`),
-      maxsize: 10485760,
-      maxFiles: 30
+      filename: path.join(logsDir, 'combined.log')
     })
   ],
   exceptionHandlers: [

@@ -12,7 +12,7 @@ class UnitTypeService extends BaseService {
     async getAllUnitTypes(options = {}) {
         const {
             page = 1,
-            limit = 20,
+            limit = 10,
             search = '',
             isActive = null,
             sortBy = 'name',

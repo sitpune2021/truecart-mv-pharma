@@ -25,9 +25,12 @@ const resolveUploadPath = (relativePath = '') => {
   return path.join(UPLOAD_ROOT, safePath);
 };
 
-const processProductImages = async ({ files = [], sku = 'product' }) => {
+const processProductImages = async ({ files = [], sku = 'product', subfolder = '' }) => {
   const safeSku = sanitizeFileName(sku) || 'product';
-  const destinationDir = path.join(PRODUCT_UPLOAD_ROOT, safeSku);
+  const safeSubfolder = subfolder ? sanitizeFileName(subfolder) : '';
+  const destinationDir = safeSubfolder
+    ? path.join(PRODUCT_UPLOAD_ROOT, safeSku, safeSubfolder)
+    : path.join(PRODUCT_UPLOAD_ROOT, safeSku);
   await ensureDirectory(destinationDir);
 
   const processedImages = [];
@@ -56,8 +59,12 @@ const processProductImages = async ({ files = [], sku = 'product' }) => {
       await fsp.unlink(file.path).catch(() => {});
     }
 
+    const relativePath = safeSubfolder
+      ? `/uploads/products/${safeSku}/${safeSubfolder}/${finalFileName}`
+      : `/uploads/products/${safeSku}/${finalFileName}`;
+
     processedImages.push({
-      path: `/uploads/products/${safeSku}/${finalFileName}`,
+      path: relativePath,
       clientId,
       filename: finalFileName,
     });

@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { sequelize, Category, Permission, User, Role, Product, Brand, Manufacturer, Marketer, ProductName } = require('./src/database/models');
+const { sequelize, Category, Permission, User, Role, Product, Brand, Manufacturer, ProductName } = require('./src/database/models');
 
 async function analyzeBackend() {
   console.log('\n=== TRUECART BACKEND ANALYSIS ===\n');
@@ -11,7 +11,7 @@ async function analyzeBackend() {
     // 1. Category Analysis
     console.log('📊 CATEGORY STRUCTURE ANALYSIS:');
     console.log('─'.repeat(60));
-    
+
     const categoryStats = await sequelize.query(`
       SELECT 
         level,
@@ -101,17 +101,15 @@ async function analyzeBackend() {
     console.log('\n\n📦 MASTER DATA STATISTICS:');
     console.log('─'.repeat(60));
 
-    const [manufacturers, brands, marketers, productNames, products] = await Promise.all([
+    const [manufacturers, brands, productNames, products] = await Promise.all([
       sequelize.query('SELECT COUNT(*) as count FROM tc_manufacturers WHERE deleted_at IS NULL', { type: sequelize.QueryTypes.SELECT }),
       sequelize.query('SELECT COUNT(*) as count FROM tc_brands WHERE deleted_at IS NULL', { type: sequelize.QueryTypes.SELECT }),
-      sequelize.query('SELECT COUNT(*) as count FROM tc_marketers WHERE deleted_at IS NULL', { type: sequelize.QueryTypes.SELECT }),
       sequelize.query('SELECT COUNT(*) as count FROM tc_product_names WHERE deleted_at IS NULL', { type: sequelize.QueryTypes.SELECT }),
       sequelize.query('SELECT COUNT(*) as count FROM tc_products WHERE deleted_at IS NULL', { type: sequelize.QueryTypes.SELECT })
     ]);
 
     console.log(`  Manufacturers: ${manufacturers[0].count}`);
     console.log(`  Brands: ${brands[0].count}`);
-    console.log(`  Marketers: ${marketers[0].count}`);
     console.log(`  Product Names: ${productNames[0].count}`);
     console.log(`  Products: ${products[0].count}`);
 

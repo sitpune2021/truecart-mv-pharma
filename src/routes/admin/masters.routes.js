@@ -15,6 +15,7 @@ const UnitTypeController = require('../../controllers/admin/unitType.controller'
 const AttributeController = require('../../controllers/admin/attribute.controller');
 const GSTController = require('../../controllers/admin/gst.controller');
 const { uploadBrandImage, uploadCategoryImage, uploadManufacturerImage } = require('../../middleware/upload/imageUpload');
+const { wrapCreate, wrapUpdate, wrapDelete } = require('../../middleware/approval/approvalWrapper');
 
 const {
   manufacturerValidation,
@@ -64,7 +65,7 @@ router.post('/suppliers',
   authorize('suppliers:create'),
   supplierValidation.create,
   validate,
-  SupplierController.createSupplier
+  wrapCreate('supplier', SupplierController.createSupplier)
 );
 
 router.put('/suppliers/:id',
@@ -72,7 +73,7 @@ router.put('/suppliers/:id',
   authorize('suppliers:update'),
   supplierValidation.update,
   validate,
-  SupplierController.updateSupplier
+  wrapUpdate('supplier', SupplierController.updateSupplier)
 );
 
 router.delete('/suppliers/:id',
@@ -80,7 +81,7 @@ router.delete('/suppliers/:id',
   authorize('suppliers:delete'),
   supplierValidation.getById,
   validate,
-  SupplierController.deleteSupplier
+  wrapDelete('supplier', SupplierController.deleteSupplier)
 );
 
 // ==================== MANUFACTURERS ====================
@@ -119,7 +120,7 @@ router.post('/manufacturers',
   uploadManufacturerImage,
   manufacturerValidation.create,
   validate,
-  ManufacturerController.createManufacturer
+  wrapCreate('manufacturer', ManufacturerController.createManufacturer)
 );
 
 router.put('/manufacturers/:id',
@@ -128,7 +129,7 @@ router.put('/manufacturers/:id',
   uploadManufacturerImage,
   manufacturerValidation.update,
   validate,
-  ManufacturerController.updateManufacturer
+  wrapUpdate('manufacturer', ManufacturerController.updateManufacturer)
 );
 
 router.delete('/manufacturers/:id',
@@ -136,7 +137,7 @@ router.delete('/manufacturers/:id',
   authorize('manufacturers:delete'),
   manufacturerValidation.getById,
   validate,
-  ManufacturerController.deleteManufacturer
+  wrapDelete('manufacturer', ManufacturerController.deleteManufacturer)
 );
 
 // ==================== BRANDS ====================
@@ -175,7 +176,7 @@ router.post('/brands',
   uploadBrandImage,
   brandValidation.create,
   validate,
-  BrandController.createBrand
+  wrapCreate('brand', BrandController.createBrand)
 );
 
 router.put('/brands/:id',
@@ -184,7 +185,7 @@ router.put('/brands/:id',
   uploadBrandImage,
   brandValidation.update,
   validate,
-  BrandController.updateBrand
+  wrapUpdate('brand', BrandController.updateBrand)
 );
 
 router.delete('/brands/:id',
@@ -192,7 +193,7 @@ router.delete('/brands/:id',
   authorize('brands:delete'),
   brandValidation.getById,
   validate,
-  BrandController.deleteBrand
+  wrapDelete('brand', BrandController.deleteBrand)
 );
 
 // ==================== CATEGORIES ====================
@@ -257,7 +258,7 @@ router.post('/categories',
   uploadCategoryImage,
   categoryValidation.create,
   validate,
-  CategoryController.createCategory
+  wrapCreate('category', CategoryController.createCategory)
 );
 
 router.put('/categories/:id',
@@ -266,7 +267,7 @@ router.put('/categories/:id',
   uploadCategoryImage,
   categoryValidation.update,
   validate,
-  CategoryController.updateCategory
+  wrapUpdate('category', CategoryController.updateCategory)
 );
 
 router.delete('/categories/:id',
@@ -274,7 +275,7 @@ router.delete('/categories/:id',
   authorize('categories:delete'),
   categoryValidation.getById,
   validate,
-  CategoryController.deleteCategory
+  wrapDelete('category', CategoryController.deleteCategory)
 );
 
 // ==================== PRODUCT NAMES (Generic Names) ====================
@@ -312,7 +313,7 @@ router.post('/product-names',
   authorize('product_names:create'),
   productNameValidation.create,
   validate,
-  ProductNameController.createProductName
+  wrapCreate('product_name', ProductNameController.createProductName)
 );
 
 router.put('/product-names/:id',
@@ -320,7 +321,7 @@ router.put('/product-names/:id',
   authorize('product_names:update'),
   productNameValidation.update,
   validate,
-  ProductNameController.updateProductName
+  wrapUpdate('product_name', ProductNameController.updateProductName)
 );
 
 router.delete('/product-names/:id',
@@ -328,7 +329,7 @@ router.delete('/product-names/:id',
   authorize('product_names:delete'),
   productNameValidation.getById,
   validate,
-  ProductNameController.deleteProductName
+  wrapDelete('product_name', ProductNameController.deleteProductName)
 );
 
 // ==================== SALTS ====================
@@ -366,7 +367,7 @@ router.post('/salts',
   authorize('salts:create'),
   saltValidation.create,
   validate,
-  SaltController.createSalt
+  wrapCreate('salt', SaltController.createSalt)
 );
 
 router.put('/salts/:id',
@@ -374,7 +375,7 @@ router.put('/salts/:id',
   authorize('salts:update'),
   saltValidation.update,
   validate,
-  SaltController.updateSalt
+  wrapUpdate('salt', SaltController.updateSalt)
 );
 
 router.delete('/salts/:id',
@@ -382,7 +383,7 @@ router.delete('/salts/:id',
   authorize('salts:delete'),
   saltValidation.getById,
   validate,
-  SaltController.deleteSalt
+  wrapDelete('salt', SaltController.deleteSalt)
 );
 
 // ==================== DOSAGES ====================
@@ -420,7 +421,7 @@ router.post('/dosages',
   authorize('dosages:create'),
   dosageValidation.create,
   validate,
-  DosageController.createDosage
+  wrapCreate('dosage', DosageController.createDosage)
 );
 
 router.put('/dosages/:id',
@@ -428,7 +429,7 @@ router.put('/dosages/:id',
   authorize('dosages:update'),
   dosageValidation.update,
   validate,
-  DosageController.updateDosage
+  wrapUpdate('dosage', DosageController.updateDosage)
 );
 
 router.delete('/dosages/:id',
@@ -436,7 +437,7 @@ router.delete('/dosages/:id',
   authorize('dosages:delete'),
   dosageValidation.getById,
   validate,
-  DosageController.deleteDosage
+  wrapDelete('dosage', DosageController.deleteDosage)
 );
 
 // ==================== UNIT TYPES ====================
@@ -474,7 +475,7 @@ router.post('/unit-types',
   authorize('unit_types:create'),
   unitTypeValidation.create,
   validate,
-  UnitTypeController.createUnitType
+  wrapCreate('unit_type', UnitTypeController.createUnitType)
 );
 
 router.put('/unit-types/:id',
@@ -482,7 +483,7 @@ router.put('/unit-types/:id',
   authorize('unit_types:update'),
   unitTypeValidation.update,
   validate,
-  UnitTypeController.updateUnitType
+  wrapUpdate('unit_type', UnitTypeController.updateUnitType)
 );
 
 router.delete('/unit-types/:id',
@@ -490,7 +491,7 @@ router.delete('/unit-types/:id',
   authorize('unit_types:delete'),
   unitTypeValidation.getById,
   validate,
-  UnitTypeController.deleteUnitType
+  wrapDelete('unit_type', UnitTypeController.deleteUnitType)
 );
 
 // ==================== ATTRIBUTES ====================
@@ -528,7 +529,7 @@ router.post('/attributes',
   authorize('attributes:create'),
   attributeValidation.create,
   validate,
-  AttributeController.createAttribute
+  wrapCreate('attribute', AttributeController.createAttribute)
 );
 
 router.put('/attributes/:id',
@@ -536,7 +537,7 @@ router.put('/attributes/:id',
   authorize('attributes:update'),
   attributeValidation.update,
   validate,
-  AttributeController.updateAttribute
+  wrapUpdate('attribute', AttributeController.updateAttribute)
 );
 
 router.delete('/attributes/:id',
@@ -544,7 +545,7 @@ router.delete('/attributes/:id',
   authorize('attributes:delete'),
   attributeValidation.getById,
   validate,
-  AttributeController.deleteAttribute
+  wrapDelete('attribute', AttributeController.deleteAttribute)
 );
 
 // ==================== GST ====================
@@ -574,7 +575,7 @@ router.post('/gst',
   authorize('gst:create'),
   gstValidation.create,
   validate,
-  GSTController.createGST
+  wrapCreate('gst', GSTController.createGST)
 );
 
 router.put('/gst/:id',
@@ -582,7 +583,7 @@ router.put('/gst/:id',
   authorize('gst:update'),
   gstValidation.update,
   validate,
-  GSTController.updateGST
+  wrapUpdate('gst', GSTController.updateGST)
 );
 
 router.delete('/gst/:id',
@@ -590,7 +591,7 @@ router.delete('/gst/:id',
   authorize('gst:delete'),
   gstValidation.getById,
   validate,
-  GSTController.deleteGST
+  wrapDelete('gst', GSTController.deleteGST)
 );
 
 module.exports = router;

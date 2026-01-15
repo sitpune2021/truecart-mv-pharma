@@ -59,7 +59,7 @@ class BaseService {
     try {
       const {
         page = 1,
-        limit = 20,
+        limit = 10,
         where = {},
         include = [],
         order = [['created_at', 'DESC']]

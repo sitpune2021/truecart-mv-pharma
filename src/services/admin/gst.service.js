@@ -11,7 +11,7 @@ class GSTService extends BaseService {
     async getAllGST(options = {}) {
         const {
             page = 1,
-            limit = 20,
+            limit = 10,
             search = '',
             isActive = null,
             sortBy = 'value',

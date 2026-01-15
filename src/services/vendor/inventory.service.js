@@ -14,7 +14,7 @@ class VendorInventoryService extends BaseService {
   async getVendorInventory(vendorId, options = {}) {
     const {
       page = 1,
-      limit = 20,
+      limit = 10,
       search,
       lowStockOnly = false,
       sortBy = 'created_at',

@@ -14,7 +14,7 @@ class RoleService extends BaseService {
   async getAllRoles(options = {}, actor) {
     const {
       page = 1,
-      limit = 20,
+      limit = 10,
       search = '',
       isActive = null,
       createdByType = null
@@ -134,7 +134,8 @@ class RoleService extends BaseService {
       throw new NotFoundError('Role not found');
     }
 
-    if (role.is_system) {
+    // System roles can only be modified by super_admin; others are blocked
+    if (role.is_system && actor.user_type !== 'super_admin') {
       throw new ForbiddenError('Cannot modify system role');
     }
 

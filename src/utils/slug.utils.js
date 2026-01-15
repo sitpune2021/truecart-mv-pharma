@@ -23,9 +23,10 @@ function generateSlug(text) {
  * @param {string} text - Text to convert to slug
  * @param {Object} model - Sequelize model to check against
  * @param {number|null} excludeId - ID to exclude from uniqueness check (for updates)
+ * @param {Object|null} transaction - Sequelize transaction to use for query
  * @returns {Promise<string>} - Unique slug
  */
-async function generateUniqueSlug(text, model, excludeId = null) {
+async function generateUniqueSlug(text, model, excludeId = null, transaction = null) {
   const baseSlug = generateSlug(text);
   let slug = baseSlug;
   let counter = 1;
@@ -37,7 +38,12 @@ async function generateUniqueSlug(text, model, excludeId = null) {
       where.id = { [Op.ne]: excludeId };
     }
 
-    const existing = await model.findOne({ where });
+    const options = { where };
+    if (transaction) {
+      options.transaction = transaction;
+    }
+
+    const existing = await model.findOne(options);
     
     if (!existing) {
       return slug;

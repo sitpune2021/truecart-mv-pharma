@@ -12,7 +12,7 @@ class CategoryService extends BaseService {
   async getAllCategories(options = {}) {
     const {
       page = 1,
-      limit = 20,
+      limit = 10,
       search = '',
       level = null,
       parentId = null,

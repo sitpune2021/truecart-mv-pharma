@@ -3,10 +3,10 @@ node_modules/
 package-lock.json
 yarn.lock
 
-# # Environment variables
-# .env
-# .env.local
-# .env.production
+# Environment variables
+.env
+.env.local
+.env.production
 
 # # Logs
 logs/
@@ -55,9 +55,10 @@ dump.rdb
 
 scripts/postman
 scripts/utilities
-scripts/database/create-salt-dosage-tables.sql
+
 docs/
 
+scripts/
 # --------------------
 # Ignore specific folders completely
 # --------------------
@@ -67,7 +68,24 @@ doc/
 BACKUPS/
 tests/
 
+*.zip
 
 
-# AND keep only first-level folders inside uploads
+# ==========================
+# Uploads - keep folder and first layer
+# ==========================
+
+# Ignore everything inside uploads
+uploads/**
+
+# But keep the uploads folder itself
+!uploads/
+
+# Keep only first-level subfolders
 !uploads/*/
+
+# Ignore all files inside those subfolders
+uploads/*/*
+
+!.gitkeep
+

@@ -8,7 +8,7 @@ class AdminInventoryService {
   async getAggregatedInventory(options = {}) {
     const {
       page = 1,
-      limit = 20,
+      limit = 10,
       search,
       lowStockOnly = false,
       sortBy = 'total_inventory',
@@ -121,7 +121,7 @@ class AdminInventoryService {
    * Get inventory for a specific vendor
    */
   async getVendorInventory(vendorId, options = {}) {
-    const { page = 1, limit = 20, search } = options;
+    const { page = 1, limit = 10, search } = options;
     const offset = (page - 1) * limit;
 
     const where = { vendor_id: vendorId };

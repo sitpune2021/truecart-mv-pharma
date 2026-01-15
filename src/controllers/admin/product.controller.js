@@ -31,11 +31,25 @@ class ProductController extends BaseController {
   }
 
   async buildImagePayload({ req, productData, existingProduct = null }) {
-    const sku = productData.sku || existingProduct?.sku || 'product';
+    console.log('buildImagePayload: received productData', {
+      primary_image_source: productData.primary_image_source,
+      primary_image: productData.primary_image,
+      primary_image_client_id: productData.primary_image_client_id,
+      retain_images: productData.retain_images
+    });
+
+    const sku =
+      productData.sku ||
+      productData.slug ||
+      productData.productName ||
+      existingProduct?.sku ||
+      'product';
     const processedImages = await processProductImages({
       files: req.files || [],
       sku
     });
+
+    console.log('buildImagePayload: processed new images', processedImages.map(f => f.path));
 
     if (!existingProduct) {
       // Create product: only new images
@@ -50,12 +64,16 @@ class ProductController extends BaseController {
     const retainImages = this.parseJsonField(
       productData.retain_images,
       existingProduct.images || []
-    ).filter((img) => (existingProduct.images || []).includes(img));
+    );
+
+    console.log('buildImagePayload: retainImages after parsing', retainImages);
 
     const removedImages = this.parseJsonField(
       productData.removed_images,
       []
     );
+
+    console.log('buildImagePayload: removedImages', removedImages);
 
     if (removedImages.length) {
       await deleteProductImages(removedImages);
@@ -66,12 +84,16 @@ class ProductController extends BaseController {
       ...processedImages.map((file) => file.path)
     ];
 
-    productData.images = finalImages;
+    // Ensure unique images
+    productData.images = [...new Set(finalImages)];
     productData.primary_image = this.resolvePrimaryImage(
       productData,
       processedImages,
       retainImages
     );
+
+    console.log('buildImagePayload: final primary_image', productData.primary_image);
+    console.log('buildImagePayload: final images array', productData.images);
 
     delete productData.retain_images;
     delete productData.removed_images;
@@ -154,8 +176,46 @@ class ProductController extends BaseController {
    */
   createProduct = this.asyncHandler(async (req, res) => {
     const productData = { ...req.body };
+    const files = req.files || [];
 
-    await this.buildImagePayload({ req, productData });
+    // Normalize field names from snake_case to match service expectations
+    if (productData.product_name) {
+      productData.productName = productData.product_name;
+      delete productData.product_name;
+    }
+
+    // Handle main product images
+    const mainProductImages = files.filter(f => f.fieldname === 'images');
+    await this.buildImagePayload({ req: { ...req, files: mainProductImages }, productData });
+
+    // Handle variant images (add primary support similar to product)
+    if (productData.variants) {
+      let variants = JSON.parse(productData.variants);
+
+      for (let i = 0; i < variants.length; i++) {
+        const variant = variants[i];
+        const variantImageFiles = files.filter(f => f.fieldname === `variants[${i}][images]`);
+
+        if (variantImageFiles.length > 0) {
+          const processedVariantImages = await processProductImages({
+            files: variantImageFiles,
+            sku: productData.sku || productData.slug || productData.productName || 'product',
+            subfolder: `variant-${i + 1}`
+          });
+          variant.images = processedVariantImages.map(img => img.path);
+
+          // Allow client to pick primary variant image via primary_image_client_id or fallback to first
+          const clientPrimaryId = variant.primary_image_client_id;
+          if (clientPrimaryId) {
+            const match = processedVariantImages.find(f => f.clientId === clientPrimaryId);
+            variant.primary_image = match ? match.path : processedVariantImages[0]?.path || null;
+          } else {
+            variant.primary_image = processedVariantImages[0]?.path || null;
+          }
+        }
+      }
+      productData.variants = JSON.stringify(variants);
+    }
 
     const product = await ProductService.createProduct(productData, req.user.id);
 
@@ -174,7 +234,88 @@ class ProductController extends BaseController {
     // Get existing product first
     const existingProduct = await ProductService.getProductById(id);
 
-    await this.buildImagePayload({ req, productData, existingProduct });
+    const files = req.files || [];
+    const mainProductImages = files.filter(f => f.fieldname === 'images');
+
+    await this.buildImagePayload({ 
+      req: { ...req, files: mainProductImages }, 
+      productData, 
+      existingProduct 
+    });
+
+    // Handle variant images on update: add/replace + primary selection
+    if (productData.variants) {
+      let variants = JSON.parse(productData.variants);
+      const files = req.files || [];
+
+      console.log('updateProduct: processing variants for images');
+
+      for (let i = 0; i < variants.length; i++) {
+        const variant = variants[i];
+        const existingVariant =
+          existingProduct.variants?.find(v => `${v.id}` === `${variant.id}`) || null;
+        const existingImages = existingVariant?.images || [];
+        
+        const retainImages = this.parseJsonField(
+          variant.retain_images,
+          existingImages
+        );
+        
+        const removedImages = this.parseJsonField(variant.removed_images, []);
+
+        console.log(`Variant ${i} [ID: ${variant.id}]:`, {
+          retainImages,
+          removedImages,
+          primary_image_source: variant.primary_image_source,
+          primary_image: variant.primary_image,
+          primary_image_client_id: variant.primary_image_client_id
+        });
+
+        // Delete removed images from storage
+        if (removedImages.length) {
+          await deleteProductImages(removedImages);
+        }
+
+        const variantImageFiles = files.filter(f => f.fieldname === `variants[${i}][images]`);
+
+        const processedVariantImages = variantImageFiles.length
+          ? await processProductImages({
+              files: variantImageFiles,
+              sku: productData.sku || productData.slug || productData.productName || existingProduct.sku || 'product',
+              subfolder: `variant-${i + 1}`
+            })
+          : [];
+
+        const finalImages = [
+          ...retainImages,
+          ...processedVariantImages.map(img => img.path)
+        ];
+        
+        // Remove duplicates if any
+        variant.images = [...new Set(finalImages)];
+
+        // Primary resolution for variant (supports existing/new)
+        const source = variant.primary_image_source;
+        const clientPrimaryId = variant.primary_image_client_id;
+
+        if (source === 'existing' && variant.primary_image && variant.images.includes(variant.primary_image)) {
+          variant.primary_image = variant.primary_image;
+        } else if (source === 'new' && clientPrimaryId) {
+          const match = processedVariantImages.find(f => f.clientId === clientPrimaryId);
+          variant.primary_image = match ? match.path : variant.images[0] || null;
+        } else {
+          variant.primary_image = variant.images[0] || null;
+        }
+
+        console.log(`Variant ${i} final primary_image:`, variant.primary_image);
+        console.log(`Variant ${i} final images array:`, variant.images);
+
+        // Cleanup helper fields
+        delete variant.retain_images;
+        delete variant.removed_images;
+      }
+      productData.variants = JSON.stringify(variants);
+    }
 
     const product = await ProductService.updateProduct(id, productData, req.user.id);
 

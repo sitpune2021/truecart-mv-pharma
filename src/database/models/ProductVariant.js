@@ -27,8 +27,28 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false
     },
+    display_name: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     pack_size: {
       type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    attribute1_name: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    attribute1_value: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    attribute2_name: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    attribute2_value: {
+      type: DataTypes.STRING(255),
       allowNull: true
     },
     weight: {
@@ -108,6 +128,34 @@ module.exports = (sequelize, DataTypes) => {
         const value = this.getDataValue('mrp');
         return value ? parseFloat(value) : null;
       }
+    },
+    selling_price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+        get() {
+            const value = this.getDataValue('selling_price');
+            return value ? parseFloat(value) : null;
+        }
+    },
+    unit_value: {
+      type: DataTypes.STRING(50),
+      allowNull: true
+    },
+    unit_type_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    stock_quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    min_order_quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    max_order_quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: true
     },
     attributes: {
       type: DataTypes.JSONB,

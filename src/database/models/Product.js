@@ -23,6 +23,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    short_description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    full_description: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
     product_name_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -56,6 +64,30 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     category_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'tc_categories',
+        key: 'id'
+      }
+    },
+    category_level_1_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'tc_categories',
+        key: 'id'
+      }
+    },
+    category_level_2_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'tc_categories',
+        key: 'id'
+      }
+    },
+    category_level_3_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
@@ -158,6 +190,30 @@ module.exports = (sequelize, DataTypes) => {
     requires_prescription: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    dosage_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'tc_dosages',
+        key: 'id'
+      }
+    },
+    gst_rate_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'tc_gsts',
+        key: 'id'
+      }
+    },
+    discount_type: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    discount_value: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true
     },
     meta_title: {
       type: DataTypes.STRING(255),
@@ -262,6 +318,28 @@ module.exports = (sequelize, DataTypes) => {
     Product.belongsTo(models.Category, {
       foreignKey: 'category_id',
       as: 'categoryDetails'
+    });
+
+    Product.belongsTo(models.Category, {
+      foreignKey: 'category_level_1_id',
+      as: 'categoryLevel1Details'
+    });
+
+    Product.belongsTo(models.Category, {
+      foreignKey: 'category_level_2_id',
+      as: 'categoryLevel2Details'
+    });
+
+    Product.belongsTo(models.Category, {
+      foreignKey: 'category_level_3_id',
+      as: 'categoryLevel3Details'
+    });
+
+    Product.belongsToMany(models.Salt, {
+      through: 'tc_product_salts',
+      foreignKey: 'product_id',
+      otherKey: 'salt_id',
+      as: 'salts'
     });
 
     Product.hasMany(models.ProductVariant, {

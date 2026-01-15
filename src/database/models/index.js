@@ -62,6 +62,12 @@ db.Product = require('./Product')(sequelize, Sequelize.DataTypes);
 db.VendorInventory = require('./VendorInventory')(sequelize, Sequelize.DataTypes);
 db.InventoryLog = require('./InventoryLog')(sequelize, Sequelize.DataTypes);
 
+// Import vendor onboarding and approval models
+db.VendorOnboarding = require('./VendorOnboarding')(sequelize, Sequelize.DataTypes);
+db.ApprovalRequest = require('./ApprovalRequest')(sequelize, Sequelize.DataTypes);
+db.ApprovalHistory = require('./ApprovalHistory')(sequelize, Sequelize.DataTypes);
+db.ApprovalNotification = require('./ApprovalNotification')(sequelize, Sequelize.DataTypes);
+
 // Setup associations
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {

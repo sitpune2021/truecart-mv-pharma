@@ -5,7 +5,8 @@ const router = express.Router();
 const { authenticate } = require('../../middleware/auth/authenticate');
 const { authorize } = require('../../middleware/auth/authorize');
 const validate = require('../../middleware/validation/validate');
-const { uploadMultiple } = require('../../middleware/upload/imageUpload');
+const { uploadMultiple, uploadAny } = require('../../middleware/upload/imageUpload');
+const { wrapCreate, wrapUpdate, wrapDelete } = require('../../middleware/approval/approvalWrapper');
 
 // Controllers
 const UserController = require('../../controllers/admin/user.controller');
@@ -16,6 +17,9 @@ const InventoryController = require('../../controllers/admin/inventory.controlle
 
 // Master Data Routes
 const mastersRoutes = require('./masters.routes');
+
+// Vendor Onboarding Routes
+const vendorOnboardingRoutes = require('./vendorOnboarding.routes');
 
 // Validators
 const {
@@ -33,55 +37,58 @@ router.use(authenticate);
 // ==================== MASTER DATA ROUTES ====================
 router.use('/masters', mastersRoutes);
 
+// ==================== VENDOR ONBOARDING ROUTES ====================
+router.use('/vendor-onboarding', vendorOnboardingRoutes);
+
 // ==================== USER ROUTES ====================
-router.get('/users/stats', 
+router.get('/users/stats',
   authorize('users:read'),
   UserController.getUserStats
 );
 
-router.get('/users', 
+router.get('/users',
   authorize('users:read'),
   commonValidators.pagination,
   validate,
   UserController.getAllUsers
 );
 
-router.get('/users/:id', 
+router.get('/users/:id',
   authorize('users:read'),
   commonValidators.idParam,
   validate,
   UserController.getUserById
 );
 
-router.post('/users', 
+router.post('/users',
   authorize('users:create'),
   userValidators.create,
   validate,
   UserController.createUser
 );
 
-router.put('/users/:id', 
+router.put('/users/:id',
   authorize('users:update'),
   userValidators.update,
   validate,
   UserController.updateUser
 );
 
-router.delete('/users/:id', 
+router.delete('/users/:id',
   authorize('users:delete'),
   commonValidators.idParam,
   validate,
   UserController.deactivateUser
 );
 
-router.post('/users/:id/reactivate', 
+router.post('/users/:id/reactivate',
   authorize('users:update'),
   commonValidators.idParam,
   validate,
   UserController.reactivateUser
 );
 
-router.post('/users/:id/roles', 
+router.post('/users/:id/roles',
   authorize('users:update'),
   userValidators.assignRoles,
   validate,
@@ -89,47 +96,47 @@ router.post('/users/:id/roles',
 );
 
 // ==================== ROLE ROUTES ====================
-router.get('/roles/stats', 
+router.get('/roles/stats',
   authorize('roles:read'),
   RoleController.getRoleStats
 );
 
-router.get('/roles', 
+router.get('/roles',
   authorize('roles:read'),
   commonValidators.pagination,
   validate,
   RoleController.getAllRoles
 );
 
-router.get('/roles/:id', 
+router.get('/roles/:id',
   authorize('roles:read'),
   commonValidators.idParam,
   validate,
   RoleController.getRoleById
 );
 
-router.post('/roles', 
+router.post('/roles',
   authorize('roles:create'),
   roleValidators.create,
   validate,
   RoleController.createRole
 );
 
-router.put('/roles/:id', 
+router.put('/roles/:id',
   authorize('roles:update'),
   roleValidators.update,
   validate,
   RoleController.updateRole
 );
 
-router.delete('/roles/:id', 
+router.delete('/roles/:id',
   authorize('roles:delete'),
   commonValidators.idParam,
   validate,
   RoleController.deleteRole
 );
 
-router.post('/roles/:id/permissions', 
+router.post('/roles/:id/permissions',
   authorize('roles:update'),
   roleValidators.assignPermissions,
   validate,
@@ -137,45 +144,45 @@ router.post('/roles/:id/permissions',
 );
 
 // ==================== PERMISSION ROUTES ====================
-router.get('/permissions/stats', 
+router.get('/permissions/stats',
   authorize('permissions:read'),
   PermissionController.getPermissionStats
 );
 
-router.get('/permissions/by-module', 
+router.get('/permissions/by-module',
   authorize('permissions:read'),
   PermissionController.getPermissionsByModule
 );
 
-router.get('/permissions', 
+router.get('/permissions',
   authorize('permissions:read'),
   commonValidators.pagination,
   validate,
   PermissionController.getAllPermissions
 );
 
-router.get('/permissions/:id', 
+router.get('/permissions/:id',
   authorize('permissions:read'),
   commonValidators.idParam,
   validate,
   PermissionController.getPermissionById
 );
 
-router.post('/permissions', 
+router.post('/permissions',
   authorize('permissions:create'),
   permissionValidators.create,
   validate,
   PermissionController.createPermission
 );
 
-router.put('/permissions/:id', 
+router.put('/permissions/:id',
   authorize('permissions:update'),
   permissionValidators.update,
   validate,
   PermissionController.updatePermission
 );
 
-router.delete('/permissions/:id', 
+router.delete('/permissions/:id',
   authorize('permissions:delete'),
   commonValidators.idParam,
   validate,
@@ -183,66 +190,68 @@ router.delete('/permissions/:id',
 );
 
 // ==================== PRODUCT ROUTES ====================
-router.get('/products/stats', 
+router.get('/products/stats',
   authorize('products:read'),
   ProductController.getProductStats
 );
 
-router.get('/products/categories', 
+router.get('/products/categories',
   authorize('products:read'),
   ProductController.getCategories
 );
 
-router.get('/products/brands', 
+router.get('/products/brands',
   authorize('products:read'),
   ProductController.getBrands
 );
 
-router.get('/products', 
+router.get('/products',
   authorize('products:read'),
   commonValidators.pagination,
   validate,
   ProductController.getAllProducts
 );
 
-router.get('/products/:id', 
+router.get('/products/:id',
   authorize('products:read'),
   commonValidators.idParam,
   validate,
   ProductController.getProductById
 );
 
-router.post('/products', 
+router.post('/products',
   authorize('products:create'),
-  uploadMultiple,
+  // Need to accept dynamic variant image field names like variants[0][images]
+  uploadAny,
   productValidators.create,
   validate,
-  ProductController.createProduct
+  wrapCreate('product', ProductController.createProduct)
 );
 
-router.put('/products/:id', 
+router.put('/products/:id',
   authorize('products:update'),
-  uploadMultiple,
+  // Allow dynamic variant image fields during update as well
+  uploadAny,
   productValidators.update,
   validate,
-  ProductController.updateProduct
+  wrapUpdate('product', ProductController.updateProduct)
 );
 
-router.delete('/products/:id', 
+router.delete('/products/:id',
   authorize('products:delete'),
   commonValidators.idParam,
   validate,
-  ProductController.deleteProduct
+  wrapDelete('product', ProductController.deleteProduct)
 );
 
-router.put('/products/:id/stock', 
+router.put('/products/:id/stock',
   authorize('products:update'),
   productValidators.updateStock,
   validate,
   ProductController.updateStock
 );
 
-router.delete('/products/:id/images', 
+router.delete('/products/:id/images',
   authorize('products:update'),
   commonValidators.idParam,
   validate,

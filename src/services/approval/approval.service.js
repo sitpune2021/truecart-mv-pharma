@@ -5,6 +5,7 @@ const {
   User,
   sequelize
 } = require('../../database/models');
+const { generateUniqueSlug } = require('../../utils/slug.utils');
 const { logger } = require('../../config/logger');
 const { Op } = require('sequelize');
 
@@ -221,12 +222,34 @@ class ApprovalService {
       }
 
       const dataToApply = approvalRequest.final_data || approvalRequest.proposed_data;
+
+      // Normalize/augment data per entity to avoid apply-time errors
+      const normalizedData = { ...dataToApply };
+
+      // Normalize boolean-like strings commonly sent from forms
+      const booleanKeys = ['is_active', 'is_featured', 'is_best_seller', 'is_offer', 'requires_prescription'];
+      for (const key of booleanKeys) {
+        if (typeof normalizedData[key] === 'string') {
+          normalizedData[key] = normalizedData[key] === 'true';
+        }
+      }
+
+      // Generate slugs where the entity has a name/slug field
+      const slugEntities = new Set(['manufacturer', 'brand', 'category', 'product_name', 'supplier', 'product']);
+      if (slugEntities.has(approvalRequest.entity_type) && normalizedData.name) {
+        normalizedData.slug = await generateUniqueSlug(
+          normalizedData.name,
+          Model,
+          approvalRequest.entity_id || undefined
+        );
+      }
+
       let result;
 
       // Apply changes based on request type
       switch (approvalRequest.request_type) {
         case 'create':
-          result = await Model.create(dataToApply, { transaction });
+          result = await Model.create(normalizedData, { transaction });
           // Update approval request with the created entity ID
           await approvalRequest.update({
             entity_id: result.id
@@ -241,7 +264,7 @@ class ApprovalService {
           if (!entityToUpdate) {
             throw new Error('Entity not found');
           }
-          result = await entityToUpdate.update(dataToApply, { transaction });
+          result = await entityToUpdate.update(normalizedData, { transaction });
           break;
 
         case 'delete':
@@ -273,7 +296,7 @@ class ApprovalService {
         action: 'applied',
         action_by: appliedBy,
         remarks: 'Changes applied to database',
-        data_snapshot: dataToApply
+        data_snapshot: normalizedData
       }, { transaction });
 
       await transaction.commit();

@@ -150,20 +150,32 @@ class ManufacturerService extends BaseService {
       throw new NotFoundError('Manufacturer not found');
     }
 
-    const brandsCount = await Brand.count({ where: { manufacturer_id: id } });
-    if (brandsCount > 0) {
-      throw new ConflictError(`Cannot delete manufacturer. ${brandsCount} brand(s) are associated with it.`);
+    // Soft-delete dependents first so the manufacturer can be removed without conflicts.
+    const transaction = await Manufacturer.sequelize.transaction();
+    try {
+      // Soft delete brands tied to this manufacturer (if any still exist in schema).
+      const brands = await Brand.findAll({ where: { manufacturer_id: id }, transaction, paranoid: true });
+      for (const brand of brands) {
+        await brand.update({ deleted_by: deletedBy }, { transaction });
+        await brand.destroy({ transaction });
+      }
+
+      // Soft delete products tied to this manufacturer.
+      const products = await Product.findAll({ where: { manufacturer_id: id }, transaction, paranoid: true });
+      for (const product of products) {
+        await product.update({ deleted_by: deletedBy }, { transaction });
+        await product.destroy({ transaction });
+      }
+
+      await manufacturer.update({ deleted_by: deletedBy }, { transaction });
+      await manufacturer.destroy({ transaction });
+
+      await transaction.commit();
+      return true;
+    } catch (error) {
+      await transaction.rollback();
+      throw error;
     }
-
-    const productsCount = await Product.count({ where: { manufacturer_id: id } });
-    if (productsCount > 0) {
-      throw new ConflictError(`Cannot delete manufacturer. ${productsCount} product(s) are associated with it.`);
-    }
-
-    await manufacturer.update({ deleted_by: deletedBy });
-    await manufacturer.destroy();
-
-    return true;
   }
 
   async getManufacturerStats() {
